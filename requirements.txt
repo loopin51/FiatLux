@@ -1,10 +1,55 @@
+# 스마트 물품 관리 시스템 - Python 종속성
+# ===============================================
+
+# 웹 프레임워크
 fastapi==0.104.1
-uvicorn==0.24.0
-fastmcp==0.1.0
+uvicorn[standard]==0.24.0
 streamlit==1.28.1
+
+# MCP (Model Context Protocol) 서버
+fastmcp==0.1.0
+
+# 데이터 검증 및 직렬화
 pydantic==2.5.0
+
+# HTTP 클라이언트 및 서버
 httpx==0.25.2
-python-multipart==0.0.6
 aiohttp==3.8.6
+requests==2.31.0
+aiofiles==23.2.1
+
+# 멀티파트 폼 데이터 처리
+python-multipart==0.0.6
+
+# AI/LLM 통합
 google-generativeai==0.3.2
+
+# 환경 변수 관리
 python-dotenv==1.0.0
+
+# 시리얼 통신 (Arduino 통신용)
+pyserial==3.5
+
+# 데이터베이스 (SQLite는 Python 표준 라이브러리)
+# sqlite3 - 별도 설치 불필요
+
+# JSON 처리 (Python 표준 라이브러리)
+# json - 별도 설치 불필요
+
+# 날짜/시간 처리
+# datetime - 별도 설치 불필요
+
+# 로깅
+# logging - 별도 설치 불필요
+
+# 테스트 및 개발 도구 (선택사항)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# 코드 품질 도구 (선택사항)
+# black==23.11.0
+# flake8==6.1.0
+# mypy==1.7.1
+
+# 성능 모니터링 (선택사항)
+# psutil==5.9.6
