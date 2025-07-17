@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InventoryGrid from '@/components/InventoryGrid';
 import SearchInterface from '@/components/SearchInterface';
 import ItemManager from '@/components/ItemManager';
+import ItemEditModal from '@/components/ItemEditModal';
 import { Item, Category } from '@/types';
 import { InventoryAPI } from '@/lib/api';
 
@@ -42,6 +43,9 @@ const InventoryManagementPage: React.FC = () => {
   const [highlightPositions, setHighlightPositions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [isNewItem, setIsNewItem] = useState(false);
 
   const api = new InventoryAPI('http://localhost:8001');
 
@@ -97,6 +101,42 @@ const InventoryManagementPage: React.FC = () => {
     } catch (err) {
       throw new Error('물품 삭제 중 오류가 발생했습니다.');
     }
+  };
+
+  // 아이템 편집 핸들러
+  const handleItemEdit = (item: Item) => {
+    setEditingItem(item);
+    setIsNewItem(false);
+    setEditModalOpen(true);
+  };
+
+  const handleNewItem = () => {
+    setEditingItem(null);
+    setIsNewItem(true);
+    setEditModalOpen(true);
+  };
+
+  const handleEditSave = async (updatedItem: Item) => {
+    try {
+      if (isNewItem) {
+        await api.addItem(updatedItem);
+      } else {
+        await api.updateItem(updatedItem.id, updatedItem);
+      }
+      await loadData();
+      setEditModalOpen(false);
+      setEditingItem(null);
+      setIsNewItem(false);
+    } catch (error) {
+      console.error('Error saving item:', error);
+      setError('아이템 저장에 실패했습니다.');
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditModalOpen(false);
+    setEditingItem(null);
+    setIsNewItem(false);
   };
 
   // 물품 선택
@@ -235,6 +275,7 @@ const InventoryManagementPage: React.FC = () => {
                 handleItemSelect(cell.item);
               }
             }}
+            onItemEdit={handleItemEdit}
           />
         )}
 
@@ -257,6 +298,18 @@ const InventoryManagementPage: React.FC = () => {
           />
         )}
       </main>
+
+      {/* 편집 모달 */}
+      {editModalOpen && (
+        <ItemEditModal
+          item={editingItem}
+          isNewItem={isNewItem}
+          existingItems={items}
+          categories={categories}
+          onSave={handleEditSave}
+          onCancel={handleEditCancel}
+        />
+      )}
 
       {/* 선택된 물품 정보 */}
       {selectedItem && (

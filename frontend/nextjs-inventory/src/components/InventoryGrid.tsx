@@ -6,16 +6,20 @@ interface InventoryGridProps {
   items: Item[];
   selectedItem?: Item | null;
   onCellClick?: (cell: GridCell) => void;
+  onItemEdit?: (item: Item) => void;
   highlightPositions?: string[];
   className?: string;
+  enableEditing?: boolean;
 }
 
 const InventoryGrid: React.FC<InventoryGridProps> = ({
   items,
   selectedItem,
   onCellClick,
+  onItemEdit,
   highlightPositions = [],
-  className = ''
+  className = '',
+  enableEditing = false
 }) => {
   const [grid, setGrid] = useState<GridCell[][]>([]);
 
@@ -85,7 +89,19 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
   };
 
   // 셀 클릭 핸들러
-  const handleCellClick = (cell: GridCell) => {
+  const handleCellClick = (cell: GridCell, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // 편집 모드이고 아이템이 있는 경우 편집 모달 열기
+    if (enableEditing && !cell.isEmpty && cell.item && onItemEdit) {
+      onItemEdit(cell.item);
+      return;
+    }
+    
+    // 기본 클릭 핸들러
     if (onCellClick) {
       onCellClick(cell);
     }
@@ -93,7 +109,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
 
   // 셀 스타일 결정
   const getCellClassName = (cell: GridCell): string => {
-    const baseClasses = 'grid-cell relative';
+    const baseClasses = 'grid-cell relative cursor-pointer transition-all duration-300';
     
     if (cell.isEmpty) {
       return `${baseClasses} grid-cell-empty`;
@@ -110,6 +126,11 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     // 하이라이트된 위치
     if (highlightPositions.includes(cell.position)) {
       cellClasses += ' animate-pulse-slow ring-2 ring-red-400';
+    }
+
+    // 편집 가능한 아이템인 경우 호버 효과 추가
+    if (enableEditing && !cell.isEmpty && cell.item) {
+      cellClasses += ' hover:ring-2 hover:ring-blue-400 hover:shadow-lg';
     }
 
     return cellClasses;
@@ -170,10 +191,14 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 <motion.div
                   key={`${rowIndex}-${colIndex}`}
                   className={getCellClassName(cell)}
-                  onClick={() => handleCellClick(cell)}
+                  onClick={(e) => handleCellClick(cell, e)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   layout
+                  title={!cell.isEmpty && cell.item ? 
+                    `${cell.item.name} (${cell.item.category})${enableEditing ? ' - 클릭하여 편집' : ''}` : 
+                    cell.position
+                  }
                 >
                   <AnimatePresence>
                     {!cell.isEmpty && cell.item && (
@@ -181,7 +206,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
-                        className="text-center"
+                        className="text-center relative"
                       >
                         <div className="truncate text-xs font-medium">
                           {cell.item.name.length > 8 
@@ -189,6 +214,13 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                             : cell.item.name
                           }
                         </div>
+                        
+                        {/* 편집 가능 표시 */}
+                        {enableEditing && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full opacity-60">
+                            <div className="w-full h-full bg-white rounded-full scale-50"></div>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
