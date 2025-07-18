@@ -2,7 +2,6 @@ import sqlite3
 import os
 from datetime import datetime
 from typing import List, Optional, Dict
-from models import Item
 
 class ItemDatabase:
     def __init__(self, db_path: str = "items.db"):
@@ -50,7 +49,7 @@ class ItemDatabase:
         conn.commit()
         conn.close()
     
-    def search_items(self, query: str, category: Optional[str] = None) -> List[Item]:
+    def search_items(self, query: str, category: Optional[str] = None) -> List[Dict]:
         """물품 검색"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -72,15 +71,15 @@ class ItemDatabase:
         
         items = []
         for row in rows:
-            items.append(Item(
-                id=row[0],
-                name=row[1],
-                description=row[2],
-                grid_position=row[3],
-                category=row[4],
-                created_at=row[5],
-                updated_at=row[6]
-            ))
+            items.append({
+                'id': row[0],
+                'name': row[1],
+                'description': row[2],
+                'grid_position': row[3],
+                'category': row[4],
+                'created_at': row[5],
+                'updated_at': row[6]
+            })
         
         return items
     
@@ -98,8 +97,10 @@ class ItemDatabase:
                 'id': row[0],
                 'name': row[1],
                 'description': row[2],
-                'category': row[3],
-                'grid_position': row[4]
+                'grid_position': row[3],
+                'category': row[4],
+                'created_at': row[5],
+                'updated_at': row[6]
             }
         return None
     
@@ -157,7 +158,7 @@ class ItemDatabase:
         
         return cursor.rowcount > 0
     
-    def get_all_items(self) -> List[Item]:
+    def get_all_items(self) -> List[Dict]:
         """모든 물품 조회"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -172,15 +173,15 @@ class ItemDatabase:
         
         items = []
         for row in rows:
-            items.append(Item(
-                id=row[0],
-                name=row[1],
-                description=row[2],
-                grid_position=row[3],
-                category=row[4],
-                created_at=row[5],
-                updated_at=row[6]
-            ))
+            items.append({
+                'id': row[0],
+                'name': row[1],
+                'description': row[2],
+                'grid_position': row[3],
+                'category': row[4],
+                'created_at': row[5],
+                'updated_at': row[6]
+            })
         
         return items
     

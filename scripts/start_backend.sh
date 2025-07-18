@@ -77,6 +77,10 @@ if [ -f "$PID_DIR/mcp_server.pid" ]; then
 fi
 
 if [ ! -f "$PID_DIR/mcp_server.pid" ]; then
+    # 로그 디렉토리 및 파일 생성
+    mkdir -p logs
+    touch logs/mcp_server.log
+    
     nohup python mcp_server.py > logs/mcp_server.log 2>&1 &
     MCP_PID=$!
     echo $MCP_PID > "$PID_DIR/mcp_server.pid"
@@ -106,8 +110,9 @@ if [ -f "$PID_DIR/fastapi_server.pid" ]; then
 fi
 
 if [ ! -f "$PID_DIR/fastapi_server.pid" ]; then
-    # 로그 디렉토리 생성
+    # 로그 디렉토리 및 파일 생성
     mkdir -p logs
+    touch logs/fastapi_server.log
     
     nohup uvicorn rest_api:app --host 0.0.0.0 --port 8001 --reload > logs/fastapi_server.log 2>&1 &
     FASTAPI_PID=$!
@@ -139,7 +144,11 @@ if [ -f "$PID_DIR/streamlit_client.pid" ]; then
 fi
 
 if [ ! -f "$PID_DIR/streamlit_client.pid" ]; then
-    nohup streamlit run streamlit_client.py --server.port 8501 > logs/streamlit_client.log 2>&1 &
+    # 로그 디렉토리 및 파일 생성
+    mkdir -p logs
+    touch logs/streamlit_client.log
+    
+    nohup streamlit run intelligent_chatbot_client.py --server.port 8501 > logs/streamlit_client.log 2>&1 &
     STREAMLIT_PID=$!
     echo $STREAMLIT_PID > "$PID_DIR/streamlit_client.pid"
     

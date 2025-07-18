@@ -30,6 +30,16 @@ python-dotenv==1.0.0
 # 시리얼 통신 (Arduino 통신용)
 pyserial==3.5
 
+# 음성 인식 (STT) 
+SpeechRecognition==3.10.0
+pyaudio==0.2.13
+pydub==0.25.1
+
+# 음성 합성 (TTS) - 추후 구현
+# gTTS==2.4.0
+# pyttsx3==2.90
+# azure-cognitiveservices-speech==1.34.0
+
 # 데이터베이스 (SQLite는 Python 표준 라이브러리)
 # sqlite3 - 별도 설치 불필요
 

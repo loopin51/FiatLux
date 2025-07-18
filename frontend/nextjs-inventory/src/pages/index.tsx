@@ -204,7 +204,7 @@ const InventoryManagementPage: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">
-                스마트 물품 관리 시스템
+                Fiat Lux
               </h1>
               <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                 실시간 연동

@@ -132,7 +132,7 @@ if command -v tmux &> /dev/null; then
     tmux new-window -t inventory-dev -n streamlit
     tmux send-keys -t inventory-dev:streamlit "cd '$PROJECT_ROOT'" Enter
     tmux send-keys -t inventory-dev:streamlit "source venv/bin/activate" Enter
-    tmux send-keys -t inventory-dev:streamlit "streamlit run streamlit_client.py --server.port 8501" Enter
+    tmux send-keys -t inventory-dev:streamlit "streamlit run frontend/intelligent_chatbot_client.py --server.port 8501" Enter
     
     # Next.js 창
     tmux new-window -t inventory-dev -n nextjs
@@ -153,7 +153,7 @@ elif command -v screen &> /dev/null; then
     screen -dmS inventory-mcp bash -c "cd '$PROJECT_ROOT'; source venv/bin/activate; python mcp_server.py"
     
     # Streamlit
-    screen -dmS inventory-streamlit bash -c "cd '$PROJECT_ROOT'; source venv/bin/activate; streamlit run streamlit_client.py --server.port 8501"
+    screen -dmS inventory-streamlit bash -c "cd '$PROJECT_ROOT'; source venv/bin/activate; streamlit run frontend/intelligent_chatbot_client.py --server.port 8501"
     
     # Next.js
     screen -dmS inventory-nextjs bash -c "cd '$PROJECT_ROOT/frontend/nextjs-inventory'; npm run dev"
@@ -168,6 +168,13 @@ else
     # 백그라운드에서 서비스 시작
     cd "$PROJECT_ROOT"
     
+    # 로그 디렉토리 및 파일 생성
+    mkdir -p logs
+    touch logs/fastapi_dev.log
+    touch logs/mcp_dev.log
+    touch logs/streamlit_dev.log
+    touch logs/nextjs_dev.log
+    
     # FastAPI 서버 시작
     nohup uvicorn rest_api:app --host 0.0.0.0 --port 8001 --reload > logs/fastapi_dev.log 2>&1 &
     echo $! > scripts/pids/fastapi_dev.pid
@@ -177,7 +184,7 @@ else
     echo $! > scripts/pids/mcp_dev.pid
     
     # Streamlit 시작
-    nohup streamlit run streamlit_client.py --server.port 8501 > logs/streamlit_dev.log 2>&1 &
+    nohup streamlit run frontend/intelligent_chatbot_client.py --server.port 8501 > logs/streamlit_dev.log 2>&1 &
     echo $! > scripts/pids/streamlit_dev.pid
     
     # Next.js 시작

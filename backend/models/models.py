@@ -24,6 +24,13 @@ class ItemResponse(BaseModel):
 
 class LEDControl(BaseModel):
     """LED 제어 모델"""
+    grid_position: str  # LED 위치 (예: "A1-A4" 또는 "B2")
+    action: str = "highlight"  # 액션 타입
+    color: str = "red"  # LED 색상
+    duration: float = 5.0  # 켜둘 시간(초)
+
+class LEDControlLegacy(BaseModel):
+    """레거시 LED 제어 모델"""
     positions: List[str]  # 켤 LED 위치들
     duration: Optional[int] = 5  # 켜둘 시간(초)
     color: Optional[str] = "blue"  # LED 색상

@@ -8,9 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import uvicorn
-from database import ItemDatabase
-from models import Item, LEDControl
-from esp32_controller import ESP32Controller
+from ..database.database import ItemDatabase
+from ..models.models import Item, LEDControl
+from ..controllers.esp32_controller import ESP32Controller
 
 # FastAPI 앱 생성
 app = FastAPI(

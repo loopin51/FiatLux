@@ -157,7 +157,36 @@ fi
 
 echo ""
 
-# 7. 권한 설정
+# 7. 필요한 디렉토리 생성
+print_status "필요한 디렉토리 생성 중..."
+
+mkdir -p logs
+mkdir -p scripts/pids
+
+# 로그 파일 초기화
+touch logs/mcp_server.log
+touch logs/fastapi_server.log
+touch logs/streamlit_client.log
+touch logs/nextjs_server.log
+touch logs/fastapi_dev.log
+touch logs/mcp_dev.log
+touch logs/streamlit_dev.log
+touch logs/nextjs_dev.log
+
+print_success "디렉토리 및 로그 파일이 생성되었습니다."
+
+echo ""
+
+# 8. 권한 설정
+print_status "실행 스크립트 권한 설정 중..."
+
+chmod +x "$SCRIPT_DIR/start_system.sh"
+chmod +x "$SCRIPT_DIR/start_backend.sh"
+chmod +x "$SCRIPT_DIR/start_frontend.sh"
+chmod +x "$SCRIPT_DIR/start_all.sh"
+chmod +x "$SCRIPT_DIR/stop_all.sh"
+
+# 8. 권한 설정
 print_status "실행 스크립트 권한 설정 중..."
 
 chmod +x "$SCRIPT_DIR/start_system.sh"
@@ -170,7 +199,7 @@ print_success "스크립트 권한이 설정되었습니다."
 
 echo ""
 
-# 8. 설정 완료
+# 9. 설정 완료
 print_success "🎉 시스템 설정이 완료되었습니다!"
 echo ""
 echo "다음 명령어로 시스템을 시작할 수 있습니다:"

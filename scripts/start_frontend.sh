@@ -102,8 +102,9 @@ if [ -f "$PID_DIR/nextjs_server.pid" ]; then
     fi
 fi
 
-# 로그 디렉토리 생성
+# 로그 디렉토리 및 파일 생성
 mkdir -p "$PROJECT_ROOT/logs"
+touch "$PROJECT_ROOT/logs/nextjs_server.log"
 
 # Next.js 개발 서버 시작
 print_status "Next.js 서버를 시작합니다..."

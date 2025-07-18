@@ -209,7 +209,7 @@ import json
 import asyncio
 import aiohttp
 from typing import List, Dict, Any, Optional
-from models import LEDControl
+from ..models.models import LEDControl
 
 class ESP32Controller:
     """ESP32 NeoPixel LED 제어 클래스"""
@@ -257,6 +257,100 @@ class ESP32Controller:
             "off": (0, 0, 0)
         }
         return colors.get(color_name.lower(), (0, 0, 255))  # 기본값: 파란색
+    
+    async def highlight_position(self, led_control: LEDControl) -> Dict[str, Any]:
+        """특정 위치의 LED를 하이라이트"""
+        try:
+            # 위치 문자열을 리스트로 변환
+            positions = []
+            if '-' in led_control.grid_position:
+                # 범위 위치 (예: "A1-A4")
+                start, end = led_control.grid_position.split('-')
+                start_row = start[0]
+                start_col = int(start[1:])
+                end_row = end[0]
+                end_col = int(end[1:])
+                
+                for row in range(ord(start_row), ord(end_row) + 1):
+                    for col in range(start_col, end_col + 1):
+                        positions.append(f"{chr(row)}{col}")
+            else:
+                # 단일 위치 (예: "A1")
+                positions.append(led_control.grid_position)
+            
+            # 위치를 LED 인덱스로 변환
+            led_indices = []
+            for position in positions:
+                led_index = self.position_to_led_index(position)
+                if led_index is not None:
+                    led_indices.append(led_index)
+            
+            if not led_indices:
+                return {
+                    "success": False,
+                    "error": "No valid LED positions found",
+                    "message": "유효한 LED 위치를 찾을 수 없습니다."
+                }
+            
+            # RGB 색상 변환
+            rgb_color = self.color_name_to_rgb(led_control.color)
+            
+            # ESP32로 전송할 명령 구성
+            command = {
+                "action": "highlight",
+                "led_indices": led_indices,
+                "color": {
+                    "r": rgb_color[0],
+                    "g": rgb_color[1],
+                    "b": rgb_color[2]
+                },
+                "duration": led_control.duration,
+                "positions": positions
+            }
+            
+            # ESP32로 HTTP 요청 전송
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{self.base_url}/led_control",
+                    json=command,
+                    timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        return {
+                            "success": True,
+                            "data": {
+                                "command": command,
+                                "esp32_response": result
+                            },
+                            "message": f"LED 제어 완료: {len(led_indices)}개 LED가 {led_control.color} 색상으로 {led_control.duration}초간 켜집니다."
+                        }
+                    else:
+                        error_text = await response.text()
+                        return {
+                            "success": False,
+                            "error": f"ESP32 응답 오류: {response.status}",
+                            "message": f"ESP32에서 오류가 발생했습니다: {error_text}"
+                        }
+        
+        except aiohttp.ClientTimeout:
+            return {
+                "success": False,
+                "error": "Timeout",
+                "message": "ESP32 연결 시간 초과"
+            }
+        except aiohttp.ClientError as e:
+            return {
+                "success": False,
+                "error": f"Connection error: {str(e)}",
+                "message": f"ESP32 연결 오류: {str(e)}"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Unexpected error: {str(e)}",
+                "message": f"예상치 못한 오류: {str(e)}"
+            }
     
     async def control_leds(self, led_control: LEDControl) -> Dict[str, Any]:
         """LED 제어 명령을 ESP32로 전송"""

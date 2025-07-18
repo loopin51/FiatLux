@@ -112,7 +112,7 @@ const ItemManager: React.FC<ItemManagerProps> = ({
         // 편집 모드
         await onItemUpdate(editingItem.id, {
           name: formData.name.trim(),
-          description: formData.description.trim() || null,
+          description: formData.description.trim() || "",
           category: formData.category,
           grid_position: formData.grid_position.trim()
         });
@@ -120,7 +120,7 @@ const ItemManager: React.FC<ItemManagerProps> = ({
         // 추가 모드
         await onItemAdd({
           name: formData.name.trim(),
-          description: formData.description.trim() || null,
+          description: formData.description.trim() || "",
           category: formData.category,
           grid_position: formData.grid_position.trim()
         });
